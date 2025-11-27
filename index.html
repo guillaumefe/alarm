@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Alarm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f3f4f6;
+      color: #111827;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 480px;
+      padding: 12px 10px 28px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px 10px 12px;
+      margin-bottom: 10px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .app-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .lang-select {
+      font-size: 0.8rem;
+      padding: 3px 6px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+    }
+
+    .date-badge {
+      font-size: 0.8rem;
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .warning {
+      background: #fef3c7;
+      border-radius: 8px;
+      padding: 6px 7px;
+      border: 1px solid #facc15;
+      font-size: 0.78rem;
+      color: #92400e;
+      line-height: 1.3;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .field-label {
+      font-size: 0.78rem;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    input[type="time"],
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select,
+    button {
+      padding: 7px 9px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #111827;
+      font-size: 0.9rem;
+    }
+
+    input[type="time"]:focus,
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      outline: 1px solid #2563eb;
+      outline-offset: 0;
+      border-color: #2563eb;
+    }
+
+    button {
+      cursor: pointer;
+      border: 1px solid #d1d5db;
+      background: #e5e7eb;
+      color: #111827;
+      font-size: 0.9rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 10px;
+    }
+
+    button:active {
+      background: #d1d5db;
+      border-color: #9ca3af;
+    }
+
+    .btn-main {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #f9fafb;
+    }
+
+    .btn-main:active {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+
+    .btn-success {
+      background: #16a34a;
+      border-color: #16a34a;
+      color: #f9fafb;
+    }
+
+    .btn-success:active {
+      background: #15803d;
+      border-color: #15803d;
+    }
+
+    .btn-danger {
+      background: #b91c1c;
+      border-color: #b91c1c;
+      color: #f9fafb;
+    }
+
+    .btn-icon {
+      border-radius: 999px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .small {
+      font-size: 0.78rem;
+      color: #6b7280;
+      line-height: 1.3;
+    }
+
+    .toggle-group {
+      display: inline-flex;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      overflow: hidden;
+    }
+
+    .toggle-btn {
+      border: none;
+      background: #ffffff;
+      padding: 4px 10px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .toggle-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .days {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .day-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 6px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 0.75rem;
+      cursor: pointer;
+      user-select: none;
+      background: #ffffff;
+      min-width: 20px;
+    }
+
+    .day-chip input {
+      display: none;
+    }
+
+    .day-chip.active {
+      background: #2563eb;
+      border-color: #1d4ed8;
+      color: #f9fafb;
+    }
+
+    .status {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .status span {
+      font-weight: 500;
+      color: #111827;
+    }
+
+    .reminder-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .reminder-item {
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      padding: 6px 7px;
+      background: #f9fafb;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .reminder-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reminder-time {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .reminder-label {
+      font-size: 0.85rem;
+      color: #374151;
+    }
+
+    .reminder-sub {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    .pill {
+      display: inline-flex;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background: #f9fafb;
+      border: 1px solid #d1d5db;
+      color: #111827;
+      white-space: nowrap;
+    }
+
+    .pill.on {
+      background: #dcfce7;
+      border-color: #16a34a;
+      color: #166534;
+    }
+
+    .pill.off {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+
+    .pill.once {
+      background: #eff6ff;
+      border-color: #60a5fa;
+      color: #1d4ed8;
+    }
+
+    .reminder-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .reminder-actions button {
+      flex: 1;
+      padding: 4px 0;
+      font-size: 0.8rem;
+    }
+
+    /* Overlay d'alerte */
+    #alert-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .alert-box {
+      text-align: center;
+      padding: 18px 14px;
+      max-width: 280px;
+      background: #ffffff;
+      border-radius: 10px;
+      border: 1px solid #f97316;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.3);
+      font-size: 0.9rem;
+    }
+
+    .alert-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: 0.1em;
+      color: #b45309;
+    }
+
+    .alert-message {
+      margin-bottom: 6px;
+      color: #111827;
+    }
+
+    .alert-time {
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    .alert-hint {
+      font-size: 0.75rem;
+      color: #6b7280;
+    }
+
+    /* Minuteur très visible */
+    #timer-display {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-align: center;
+      min-width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <!-- ALERTE VISUELLE -->
+  <div id="alert-overlay">
+    <div class="alert-box">
+      <div class="alert-title" data-i18n="alert.title"></div>
+      <div class="alert-message" id="alert-text">Meeting</div>
+      <div class="alert-time" id="alert-time">09:30</div>
+      <div class="alert-hint" data-i18n="alert.hint"></div>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- Header + avertissement -->
+    <div class="card">
+      <div class="header-row">
+        <div class="header-left">
+          <div class="app-title" data-i18n="app.title"></div>
+          <div class="small" data-i18n="app.subtitle"></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-end;">
+          <select id="lang-select" class="lang-select" title="Language">
+            <option value="fr">FR</option>
+            <option value="en">EN</option>
+          </select>
+          <div class="date-badge" id="today-display"></div>
+        </div>
+      </div>
+      <div class="warning" data-i18n="warning.text"></div>
+    </div>
+
+    <!-- Tabs Horloge / Minuteur -->
+    <div class="card">
+      <div class="toggle-group" aria-label="Mode">
+        <button
+          type="button"
+          class="toggle-btn active"
+          id="tab-clock-btn"
+          data-i18n="tab.clock"
+        ></button>
+        <button
+          type="button"
+          class="toggle-btn"
+          id="tab-timer-btn"
+          data-i18n="tab.timer"
+        ></button>
+      </div>
+    </div>
+
+    <!-- SECTION AUDIO GLOBALE + SON DES ALARMES -->
+    <div class="card">
+      <div class="row">
+        <div class="field">
+          <div class="field-label" data-i18n="audio.label"></div>
+          <select id="sound-select" title="Sound type">
+            <option value="chime" data-i18n="audio.option.chime"></option>
+            <option value="soft" data-i18n="audio.option.soft"></option>
+            <option value="pulse" data-i18n="audio.option.pulse"></option>
+            <option value="custom" data-i18n="audio.option.custom"></option>
+          </select>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button
+            id="enable-sound-btn"
+            class="btn-icon btn-main"
+            data-i18n="audio.enable"
+          ></button>
+          <button
+            id="test-sound-btn"
+            class="btn-icon"
+            data-i18n="audio.test"
+          ></button>
+        </div>
+      </div>
+      <div class="row" id="custom-sound-row" style="display:none;">
+        <div class="field">
+          <div class="field-label" data-i18n="audio.file.label"></div>
+          <input type="file" id="custom-sound" accept="audio/*" />
+          <div class="small" data-i18n="audio.file.note"></div>
+        </div>
+      </div>
+      <div class="status" id="audio-status" data-i18n="audio.status.inactive"></div>
+    </div>
+
+    <!-- Onglet HORLOGE -->
+    <div id="tab-clock-view">
+      <!-- Formulaire alarmes -->
+      <div class="card">
+        <div class="row" style="justify-content: space-between;">
+          <div class="toggle-group" aria-label="Alarm type">
+            <button
+              type="button"
+              class="toggle-btn active"
+              id="type-once-btn"
+              data-i18n="type.once"
+            ></button>
+            <button
+              type="button"
+              class="toggle-btn"
+              id="type-recurring-btn"
+              data-i18n="type.recurring"
+            ></button>
+          </div>
+          <button
+            id="add-btn"
+            class="btn-main btn-icon"
+            data-i18n="btn.add"
+          ></button>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <div class="field-label" data-i18n="field.time"></div>
+            <input type="time" id="time-input" required />
+          </div>
+        </div>
+
+        <div class="row" id="date-field">
+          <div class="field">
+            <div class="field-label" data-i18n="field.date"></div>
+            <input type="date" id="date-input" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <div class="field-label" data-i18n="field.label"></div>
+            <input
+              type="text"
+              id="label-input"
+              data-i18n-placeholder="field.label.placeholder"
+            />
+          </div>
+        </div>
+
+        <!-- réglage du nombre de répétitions -->
+        <div class="row">
+          <div class="field">
+            <div class="field-label" data-i18n="field.maxPlays"></div>
+            <input
+              type="number"
+              id="max-plays-input"
+              min="1"
+              max="50"
+              value="15"
+            />
+            <div class="small" data-i18n="field.maxPlays.help"></div>
+          </div>
+        </div>
+
+        <div class="field" id="days-wrapper" style="display:none;">
+          <div class="field-label" data-i18n="field.days"></div>
+          <div class="days" id="days-container"></div>
+        </div>
+
+        <div class="status" id="status-line" data-i18n="status.idle"></div>
+      </div>
+
+      <!-- Liste alarmes -->
+      <div class="card">
+        <div class="row" style="justify-content: space-between; align-items:center;">
+          <div class="field-label" data-i18n="list.title"></div>
+          <button
+            class="btn-danger btn-icon"
+            id="clear-btn"
+            data-i18n="btn.clearAll"
+          ></button>
+        </div>
+
+        <div id="reminders-container" class="reminder-list"></div>
+      </div>
+    </div>
+
+    <!-- Onglet MINUTEUR -->
+    <div id="tab-timer-view" style="display:none;">
+      <div class="card">
+        <div class="field-label" data-i18n="timer.title"></div>
+
+        <div class="row">
+          <div class="field">
+            <div class="field-label" data-i18n="timer.duration"></div>
+            <div style="display:flex; gap:6px;">
+              <input
+                type="number"
+                id="timer-minutes"
+                min="0"
+                value="0"
+                style="max-width:80px;"
+              />
+              <span style="align-self:center;">:</span>
+              <input
+                type="number"
+                id="timer-seconds"
+                min="0"
+                max="59"
+                value="30"
+                style="max-width:80px;"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="justify-content:space-between; align-items:center;">
+          <button
+            id="timer-start-btn"
+            class="btn-main btn-icon"
+            data-i18n="timer.start"
+          ></button>
+          <button
+            id="timer-stop-btn"
+            class="btn-icon"
+            data-i18n="timer.stop"
+          ></button>
+          <div id="timer-display">00:30</div>
+        </div>
+      </div>
+
+      <!-- Encart son spécifique MINUTEUR -->
+      <div class="card">
+        <div class="row">
+          <div class="field">
+            <div class="field-label" data-i18n="timer.sound.label"></div>
+            <select id="timer-sound-select" title="Timer sound type">
+              <option value="chime" data-i18n="audio.option.chime"></option>
+              <option value="soft" data-i18n="audio.option.soft"></option>
+              <option value="pulse" data-i18n="audio.option.pulse"></option>
+              <option value="custom" data-i18n="audio.option.custom"></option>
+            </select>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button
+              id="timer-test-sound-btn"
+              class="btn-icon"
+              data-i18n="audio.test"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- i18n ----------
+    const TRANSLATIONS = {
+      fr: {
+        "app.title": "Alarm",
+        "app.subtitle": "Alarmes simples et récurrentes.",
+        "warning.text":
+          "Activez le son une fois après ouverture, sinon le navigateur peut le bloquer en arrière-plan.",
+        "audio.label": "Son des alarmes",
+        "audio.option.chime": "Cloche",
+        "audio.option.soft": "Doux",
+        "audio.option.pulse": "Pulses",
+        "audio.option.custom": "Fichier",
+        "audio.enable": "Activer le son",
+        "audio.test": "Tester le son",
+        "audio.file.label": "Fichier audio",
+        "audio.file.note": "Utilisé uniquement pour cette session.",
+        "audio.status.inactive": "Son inactif.",
+        "audio.status.active":
+          "Son activé. Les alarmes seront audibles si le navigateur reste ouvert.",
+        "type.recurring": "Récurrente",
+        "type.once": "Ponctuelle",
+        "btn.add": "Ajouter",
+        "btn.save": "Enregistrer",
+        "btn.edit": "Éditer",
+        "field.time": "Heure",
+        "field.date": "Date",
+        "field.label": "Label",
+        "field.label.placeholder": "Réunion, visio...",
+        "field.days": "Jours",
+        "field.maxPlays": "Répétitions du son",
+        "field.maxPlays.help": "Nombre de fois où le son sera rejoué pour cette alarme.",
+        "list.title": "Alarmes",
+        "btn.clearAll": "Tout effacer",
+        "list.empty": "Aucune alarme.",
+        "pill.recurring": "Récurrente",
+        "pill.once": "Ponctuelle",
+        "days.everyday": "Tous les jours",
+        "last.prefix": "Dernier : ",
+        "btn.toggle": "ON / OFF",
+        "btn.delete": "Supprimer",
+        "confirm.deleteAll": "Supprimer TOUTES les alarmes ?",
+        "confirm.deleteOne": "Supprimer l’alarme {time} – {label} ?",
+        "status.idle": "En attente d’alarmes…",
+        "status.added": "Alarme ajoutée : {time}.",
+        "status.updated": "Alarme mise à jour : {time}.",
+        "status.triggered":
+          "Dernière alarme : {time} ({count} alarme(s)).",
+        "error.missingTime": "Heure manquante.",
+        "error.missingDate": "Date manquante.",
+        "status.cleared": "Toutes les alarmes ont été supprimées.",
+        "alert.title": "ALARME",
+        "alert.hint": "Cliquer pour fermer.",
+        "notification.title": "Alarme",
+        "notification.defaultBody": "Réunion / visio",
+        "audio.enable.msg":
+          "Son activé. Les alarmes seront audibles si le navigateur reste ouvert.",
+        "sound.label": "Son :",
+        "sound.name.chime": "Cloche",
+        "sound.name.soft": "Doux",
+        "sound.name.pulse": "Pulses",
+        "sound.name.custom": "Fichier",
+
+        "timer.title": "Minuteur",
+        "timer.duration": "Durée (min:sec)",
+        "timer.start": "Démarrer",
+        "timer.stop": "Arrêter",
+        "timer.finished": "Minuteur terminé",
+        "timer.sound.label": "Son du minuteur",
+
+        "tab.clock": "Horloge",
+        "tab.timer": "Minuteur",
+      },
+      en: {
+        "app.title": "Alarm",
+        "app.subtitle": "Simple one-time and recurring alarms.",
+        "warning.text":
+          "Activate sound once after opening, otherwise the browser may block it in the background.",
+        "audio.label": "Alarm sound",
+        "audio.option.chime": "Chime",
+        "audio.option.soft": "Soft",
+        "audio.option.pulse": "Pulses",
+        "audio.option.custom": "File",
+        "audio.enable": "Activate sound",
+        "audio.test": "Test sound",
+        "audio.file.label": "Audio file",
+        "audio.file.note": "Used only for this session.",
+        "audio.status.inactive": "Sound inactive.",
+        "audio.status.active":
+          "Sound activated. Alarms will be audible while the tab remains open.",
+        "type.recurring": "Recurring",
+        "type.once": "One time",
+        "btn.add": "Add",
+        "btn.save": "Save",
+        "btn.edit": "Edit",
+        "field.time": "Time",
+        "field.date": "Date",
+        "field.label": "Label",
+        "field.label.placeholder": "Meeting, call...",
+        "field.days": "Days",
+        "field.maxPlays": "Sound repetitions",
+        "field.maxPlays.help": "How many times the sound will repeat for this alarm.",
+        "list.title": "Alarms",
+        "btn.clearAll": "Clear all",
+        "list.empty": "No alarm.",
+        "pill.recurring": "Recurring",
+        "pill.once": "One time",
+        "days.everyday": "Every day",
+        "last.prefix": "Last: ",
+        "btn.toggle": "ON / OFF",
+        "btn.delete": "Delete",
+        "confirm.deleteAll": "Delete ALL alarms?",
+        "confirm.deleteOne": "Delete alarm {time} – {label}?",
+        "status.idle": "Waiting for alarms…",
+        "status.added": "Alarm added: {time}.",
+        "status.updated": "Alarm updated: {time}.",
+        "status.triggered":
+          "Last alarm: {time} ({count} alarm(s)).",
+        "error.missingTime": "Time is required.",
+        "error.missingDate": "Date is required.",
+        "status.cleared": "All alarms have been deleted.",
+        "alert.title": "ALARM",
+        "alert.hint": "Click to close.",
+        "notification.title": "Alarm",
+        "notification.defaultBody": "Meeting / call",
+        "audio.enable.msg":
+          "Sound activated. Alarms will be audible while the tab remains open.",
+        "sound.label": "Sound:",
+        "sound.name.chime": "Chime",
+        "sound.name.soft": "Soft",
+        "sound.name.pulse": "Pulses",
+        "sound.name.custom": "File",
+
+        "timer.title": "Timer",
+        "timer.duration": "Duration (min:sec)",
+        "timer.start": "Start",
+        "timer.stop": "Stop",
+        "timer.finished": "Timer finished",
+        "timer.sound.label": "Timer sound",
+
+        "tab.clock": "Clock",
+        "tab.timer": "Timer",
+      },
+    };
+
+    const DAY_LOCALES = {
+      fr: {
+        labels: ["D", "L", "M", "M", "J", "V", "S"],
+        titles: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+        locale: "fr-FR",
+      },
+      en: {
+        labels: ["S", "M", "T", "W", "T", "F", "S"],
+        titles: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        locale: "en-GB",
+      },
+    };
+
+    let currentLang = localStorage.getItem("alarm_lang") || "fr";
+
+    function t(key, vars = {}) {
+      const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.fr;
+      let str = dict[key] || key;
+      Object.keys(vars).forEach((k) => {
+        str = str.replace(`{${k}}`, vars[k]);
+      });
+      return str;
+    }
+
+    function applyTranslations() {
+      const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.fr;
+      document.documentElement.lang = currentLang;
+
+      document
+        .querySelectorAll("[data-i18n]")
+        .forEach((el) => {
+          const key = el.dataset.i18n;
+          if (dict[key]) {
+            el.textContent = dict[key];
+          }
+        });
+
+      document
+        .querySelectorAll("[data-i18n-placeholder]")
+        .forEach((el) => {
+          const key = el.dataset.i18nPlaceholder;
+          if (dict[key]) {
+            el.placeholder = dict[key];
+          }
+        });
+
+      const todayEl = document.getElementById("today-display");
+      if (todayEl) {
+        todayEl.textContent = formatTodayShort();
+      }
+
+      buildDayChips();
+      renderReminders();
+      updateAddButtonLabel();
+    }
+
+    // ---------- Constantes & état ----------
+    const DB_NAME = "alarm_app_js";
+    const DB_VERSION = 1;
+    const STORE_NAME = "alarms";
+
+    const DEFAULT_MAX_ALERT_PLAYS = 15; // par défaut si non configuré
+    const TIMER_ALERT_PLAYS = 5;        // répétitions pour le minuteur
+
+    let reminders = [];
+    let checkIntervalId = null;
+    let audioCtx = null;
+    let masterGain = null;
+
+    // sons par défaut (alarme / minuteur indépendants)
+    let alarmSoundType = localStorage.getItem("alarm_sound_type") || "chime";
+    let timerSoundType = localStorage.getItem("timer_sound_type") || alarmSoundType;
+
+    let customAudioElement = null;
+    let customAudioURL = null;
+    let currentType = "once";
+    let isEditing = false;
+    let editingId = null;
+
+    let alertSoundIntervalId = null;
+    let alertSoundPlayCount = 0;
+
+    // Minuteur
+    let timerIntervalId = null;
+    let timerRemainingSec = 0;
+
+    // Son ON/OFF global
+    let soundEnabled = false;
+
+    // ---------- Date / heure ----------
+    function formatTodayShort() {
+      const now = new Date();
+      const locale =
+        (DAY_LOCALES[currentLang] && DAY_LOCALES[currentLang].locale) ||
+        "fr-FR";
+      const opts = {
+        weekday: "short",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      };
+      return now.toLocaleDateString(locale, opts);
+    }
+
+    function getTodayISO() {
+      const d = new Date();
+      return d.toISOString().slice(0, 10);
+    }
+
+    function getCurrentHHMM() {
+      const d = new Date();
+      const h = String(d.getHours()).padStart(2, "0");
+      const m = String(d.getMinutes()).padStart(2, "0");
+      return h + ":" + m;
+    }
+
+    function generateId() {
+      return (
+        Date.now().toString(36) + "-" + Math.random().toString(36).slice(2)
+      );
+    }
+
+    // ---------- Audio ----------
+    function ensureAudioContext() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return null;
+      if (!audioCtx) {
+        audioCtx = new AudioContext();
+      } else if (audioCtx.state === "suspended") {
+        audioCtx.resume().catch(() => {});
+      }
+      return audioCtx;
+    }
+
+    function getMasterGain() {
+      const ctx = ensureAudioContext();
+      if (!ctx) return null;
+      if (!masterGain) {
+        masterGain = ctx.createGain();
+        masterGain.gain.setValueAtTime(1, ctx.currentTime);
+        masterGain.connect(ctx.destination);
+      }
+      return masterGain;
+    }
+
+    // Gain qui monte progressivement depuis 0 jusqu'à finalGain
+    function createRisingGain(ctx, startTime, duration, finalGain) {
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.0, startTime);
+      gain.gain.linearRampToValueAtTime(finalGain, startTime + duration);
+      return gain;
+    }
+
+    function playChimeRising() {
+      const ctx = ensureAudioContext();
+      const master = getMasterGain();
+      if (!ctx || !master) return;
+
+      const baseTime = ctx.currentTime;
+      const notes = [880, 1047, 1319];
+      const noteDuration = 0.6;
+
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+
+        const start = baseTime + i * 0.5;
+        const duration = noteDuration;
+        const gain = createRisingGain(ctx, start, duration, 0.8);
+
+        osc.connect(gain);
+        gain.connect(master);
+        osc.start(start);
+        osc.stop(start + duration);
+      });
+    }
+
+    function playSoftToneRising() {
+      const ctx = ensureAudioContext();
+      const master = getMasterGain();
+      if (!ctx || !master) return;
+
+      const osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.value = 500;
+
+      const now = ctx.currentTime;
+      const duration = 5;
+
+      const gain = createRisingGain(ctx, now, duration, 0.9);
+
+      osc.connect(gain);
+      gain.connect(master);
+
+      osc.start(now);
+      osc.stop(now + duration);
+    }
+
+    function playPulseIncreasing() {
+      const ctx = ensureAudioContext();
+      const master = getMasterGain();
+      if (!ctx || !master) return;
+
+      const baseTime = ctx.currentTime;
+      const pulses = 6;
+
+      for (let i = 0; i < pulses; i++) {
+        const osc = ctx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.value = 650;
+
+        const start = baseTime + i * 0.6;
+        const duration = 0.35;
+        const finalGain = 0.3 + (i / (pulses - 1)) * 0.7;
+        const gain = createRisingGain(ctx, start, duration, finalGain);
+
+        osc.connect(gain);
+        gain.connect(master);
+
+        osc.start(start);
+        osc.stop(start + duration);
+      }
+    }
+
+    function playCustomAudioRising() {
+      if (!customAudioElement) return;
+
+      customAudioElement.pause();
+      customAudioElement.currentTime = 0;
+      customAudioElement.volume = 0;
+
+      const steps = 20;
+      const stepMs = 250;
+      let currentStep = 0;
+
+      customAudioElement.play().catch(() => {});
+
+      const interval = setInterval(() => {
+        currentStep++;
+        const targetVolume = currentStep / steps;
+        customAudioElement.volume = Math.min(1, targetVolume);
+
+        if (currentStep >= steps || customAudioElement.paused) {
+          clearInterval(interval);
+        }
+      }, stepMs);
+    }
+
+    // Joue le son une seule fois pour un type donné
+    function playSelectedSoundOnce(typeOverride, options = {}) {
+      const { ignoreEnabled = false } = options;
+      if (!ignoreEnabled && !soundEnabled) return;
+
+      let type = typeOverride || alarmSoundType;
+      if (type === "custom" && !customAudioElement) {
+        type = "chime";
+      }
+
+      if (type === "custom" && customAudioElement) {
+        playCustomAudioRising();
+      } else if (type === "soft") {
+        playSoftToneRising();
+      } else if (type === "pulse") {
+        playPulseIncreasing();
+      } else {
+        playChimeRising();
+      }
+    }
+
+    // Boucle de son pour l'alarme, avec maxPlays configurable
+    function startAlertSoundLoop(soundId, maxPlays) {
+      if (!soundEnabled) return;
+      stopAlertSoundLoop();
+
+      const limit =
+        typeof maxPlays === "number" && maxPlays > 0
+          ? maxPlays
+          : DEFAULT_MAX_ALERT_PLAYS;
+
+      const effectiveType = soundId || alarmSoundType;
+
+      alertSoundPlayCount = 0;
+      playSelectedSoundOnce(effectiveType);
+      alertSoundPlayCount = 1;
+
+      alertSoundIntervalId = setInterval(() => {
+        if (alertSoundPlayCount >= limit || !soundEnabled) {
+          stopAlertSoundLoop();
+          return;
+        }
+        playSelectedSoundOnce(effectiveType);
+        alertSoundPlayCount++;
+      }, 6000);
+    }
+
+    function stopAlertSoundLoop() {
+      if (alertSoundIntervalId !== null) {
+        clearInterval(alertSoundIntervalId);
+        alertSoundIntervalId = null;
+      }
+      if (customAudioElement) {
+        customAudioElement.pause();
+        customAudioElement.currentTime = 0;
+      }
+    }
+
+    function tryNotification(message, time) {
+      if (!("Notification" in window)) return;
+      if (Notification.permission === "granted") {
+        new Notification(t("notification.title"), {
+          body: (message || t("notification.defaultBody")) + " " + time,
+        });
+      }
+    }
+
+    // Petit son audible mais discret pour "débloquer" le contexte audio
+    function warmupAudioContext() {
+      const ctx = ensureAudioContext();
+      const master = getMasterGain();
+      if (!ctx || !master) return;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.frequency.value = 440;
+      const start = ctx.currentTime;
+      gain.gain.setValueAtTime(0.05, start);
+      gain.gain.linearRampToValueAtTime(0.2, start + 0.1);
+
+      osc.connect(gain);
+      gain.connect(master);
+
+      osc.start(start);
+      osc.stop(start + 0.15);
+    }
+
+    // ---------- IndexedDB ----------
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: "id" });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbGetAllReminders() {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, "readonly");
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbPutReminder(rem) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.put(rem);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbDeleteReminder(id) {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.delete(id);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbClearAll() {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        const store = tx.objectStore(STORE_NAME);
+        const req = store.clear();
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    // ---------- UI : jours ----------
+    function buildDayChips() {
+      const container = document.getElementById("days-container");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const localeData = DAY_LOCALES[currentLang] || DAY_LOCALES.fr;
+      const labels = localeData.labels;
+      const titles = localeData.titles;
+
+      labels.forEach((name, index) => {
+        const label = document.createElement("label");
+        label.className = "day-chip";
+        label.dataset.dayIndex = index.toString();
+        label.title = titles[index];
+
+        const input = document.createElement("input");
+        input.type = "checkbox";
+
+        const span = document.createElement("span");
+        span.textContent = name;
+
+        label.appendChild(input);
+        label.appendChild(span);
+
+        label.addEventListener("click", (e) => {
+          if (e.target.tagName.toLowerCase() === "input") return;
+          const isActive = label.classList.toggle("active");
+          input.checked = isActive;
+        });
+
+        container.appendChild(label);
+      });
+    }
+
+    function getSelectedDays() {
+      const container = document.getElementById("days-container");
+      if (!container) return [];
+      const labels = Array.from(container.querySelectorAll(".day-chip"));
+      const selectedIndexes = [];
+      labels.forEach((label) => {
+        if (label.classList.contains("active")) {
+          const idx = parseInt(label.dataset.dayIndex, 10);
+          selectedIndexes.push(idx);
+        }
+      });
+      return selectedIndexes;
+    }
+
+    function resetDayChips() {
+      const container = document.getElementById("days-container");
+      if (!container) return;
+      const labels = Array.from(container.querySelectorAll(".day-chip"));
+      labels.forEach((label) => {
+        const input = label.querySelector("input");
+        if (input) input.checked = false;
+        label.classList.remove("active");
+      });
+    }
+
+    function setDayChipsFromArray(days) {
+      const container = document.getElementById("days-container");
+      if (!container) return;
+      const labels = Array.from(container.querySelectorAll(".day-chip"));
+      labels.forEach((label) => {
+        const idx = parseInt(label.dataset.dayIndex, 10);
+        const active = days.includes(idx);
+        const input = label.querySelector("input");
+        if (input) input.checked = active;
+        if (active) label.classList.add("active");
+        else label.classList.remove("active");
+      });
+    }
+
+    // ---------- Minuteur ----------
+    function formatSecondsToMMSS(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    }
+
+    function updateTimerDisplay() {
+      const display = document.getElementById("timer-display");
+      if (!display) return;
+      display.textContent = formatSecondsToMMSS(timerRemainingSec);
+    }
+
+    function stopTimer() {
+      if (timerIntervalId !== null) {
+        clearInterval(timerIntervalId);
+        timerIntervalId = null;
+      }
+    }
+
+    function startTimer(totalSec) {
+      stopTimer();
+      timerRemainingSec = totalSec;
+      updateTimerDisplay();
+
+      if (timerRemainingSec <= 0) return;
+
+      timerIntervalId = setInterval(() => {
+        timerRemainingSec--;
+        updateTimerDisplay();
+
+        if (timerRemainingSec <= 0) {
+          stopTimer();
+          // minuteur : son spécifique
+          showVisualAlert(t("timer.finished"), getCurrentHHMM(), timerSoundType, TIMER_ALERT_PLAYS);
+        }
+      }, 1000);
+    }
+
+    // ---------- UI : liste alarmes ----------
+    function renderReminders() {
+      const container = document.getElementById("reminders-container");
+      if (!container) return;
+      container.innerHTML = "";
+
+      if (!reminders || reminders.length === 0) {
+        const div = document.createElement("div");
+        div.className = "small";
+        div.textContent = t("list.empty");
+        container.appendChild(div);
+        return;
+      }
+
+      const localeData = DAY_LOCALES[currentLang] || DAY_LOCALES.fr;
+      const dayLabels = localeData.labels;
+
+      reminders
+        .slice()
+        .sort((a, b) => a.time.localeCompare(b.time))
+        .forEach((rem) => {
+          const item = document.createElement("div");
+          item.className = "reminder-item";
+
+          const main = document.createElement("div");
+          main.className = "reminder-main";
+
+          const left = document.createElement("div");
+          const timeEl = document.createElement("div");
+          timeEl.className = "reminder-time";
+          timeEl.textContent = rem.time;
+          const labelEl = document.createElement("div");
+          labelEl.className = "reminder-label";
+          labelEl.textContent = rem.label || "(Sans label)";
+
+          left.appendChild(timeEl);
+          left.appendChild(labelEl);
+
+          const typePill = document.createElement("span");
+          typePill.className = "pill once";
+          typePill.textContent =
+            rem.type === "once"
+              ? t("pill.once")
+              : t("pill.recurring");
+
+          main.appendChild(left);
+          main.appendChild(typePill);
+
+          const sub = document.createElement("div");
+          sub.className = "reminder-sub";
+
+          const whenInfo = document.createElement("div");
+          if (rem.type === "once") {
+            whenInfo.textContent = rem.date || "";
+          } else {
+            if (!rem.days || rem.days.length === 0) {
+              whenInfo.textContent = t("days.everyday");
+            } else {
+              whenInfo.textContent = rem.days
+                .map((d) => dayLabels[d])
+                .join(" ");
+            }
+          }
+
+          const statePill = document.createElement("span");
+          statePill.className = "pill " + (rem.enabled ? "on" : "off");
+          statePill.textContent = rem.enabled ? "ON" : "OFF";
+
+          sub.appendChild(whenInfo);
+          sub.appendChild(statePill);
+
+          item.appendChild(main);
+          item.appendChild(sub);
+
+          const soundInfo = document.createElement("div");
+          soundInfo.className = "small";
+          const soundKey = "sound.name." + (rem.sound || "chime");
+          soundInfo.textContent = t("sound.label") + " " + t(soundKey);
+          item.appendChild(soundInfo);
+
+          // info sur le nombre de répétitions
+          const maxPlaysInfo = document.createElement("div");
+          maxPlaysInfo.className = "small";
+          maxPlaysInfo.textContent =
+            t("field.maxPlays") + " : " + (rem.maxPlays || DEFAULT_MAX_ALERT_PLAYS);
+          item.appendChild(maxPlaysInfo);
+
+          if (rem.lastTriggered) {
+            const info = document.createElement("div");
+            info.className = "small";
+            info.textContent = t("last.prefix") + rem.lastTriggered;
+            item.appendChild(info);
+          }
+
+          const actions = document.createElement("div");
+          actions.className = "reminder-actions";
+
+          const toggleBtn = document.createElement("button");
+          toggleBtn.className = "btn-secondary";
+          toggleBtn.textContent = t("btn.toggle");
+          toggleBtn.title = t("btn.toggle");
+          toggleBtn.addEventListener("click", async () => {
+            rem.enabled = !rem.enabled;
+            await dbPutReminder(rem);
+            renderReminders();
+          });
+
+          const editBtn = document.createElement("button");
+          editBtn.className = "btn-secondary";
+          editBtn.textContent = t("btn.edit");
+          editBtn.title = t("btn.edit");
+          editBtn.addEventListener("click", () => {
+            startEdit(rem);
+          });
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "btn-secondary";
+          delBtn.textContent = t("btn.delete");
+          delBtn.title = t("btn.delete");
+          delBtn.addEventListener("click", async () => {
+            const msg = t("confirm.deleteOne", {
+              time: rem.time,
+              label: rem.label || "",
+            });
+            if (confirm(msg)) {
+              reminders = reminders.filter((r) => r.id !== rem.id);
+              await dbDeleteReminder(rem.id);
+              renderReminders();
+            }
+          });
+
+          actions.appendChild(toggleBtn);
+          actions.appendChild(editBtn);
+          actions.appendChild(delBtn);
+
+          item.appendChild(actions);
+
+          container.appendChild(item);
+        });
+    }
+
+    // ---------- Édition ----------
+    function startEdit(rem) {
+      isEditing = true;
+      editingId = rem.id;
+
+      const timeInput = document.getElementById("time-input");
+      const dateInput = document.getElementById("date-input");
+      const labelInput = document.getElementById("label-input");
+
+      timeInput.value = rem.time || "";
+      labelInput.value = rem.label || "";
+
+      alarmSoundType = rem.sound || alarmSoundType || "chime";
+      updateSoundUI();
+
+      document.getElementById("sound-select").value = alarmSoundType;
+
+      setType(rem.type || "once");
+      if (rem.type === "once") {
+        if (rem.date) {
+          dateInput.value = rem.date;
+        } else {
+          dateInput.value = getTodayISO();
+        }
+      } else {
+        resetDayChips();
+        setDayChipsFromArray(rem.days || []);
+      }
+
+      updateAddButtonLabel();
+
+      const timeEl = document.getElementById("time-input");
+      if (timeEl) {
+        timeEl.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    function updateAddButtonLabel() {
+      const addBtn = document.getElementById("add-btn");
+      if (!addBtn) return;
+      if (isEditing) {
+        addBtn.textContent = t("btn.save");
+      } else {
+        addBtn.textContent = t("btn.add");
+      }
+    }
+
+    // ---------- Alerte ----------
+    function showVisualAlert(message, time, soundId, maxPlays) {
+      const overlay = document.getElementById("alert-overlay");
+      const textEl = document.getElementById("alert-text");
+      const timeEl = document.getElementById("alert-time");
+
+      textEl.textContent = message || t("notification.defaultBody");
+      timeEl.textContent = time;
+
+      overlay.style.display = "flex";
+
+      ensureAudioContext();
+      startAlertSoundLoop(soundId, maxPlays);
+      tryNotification(message, time);
+    }
+
+    // ---------- Vérification périodique ----------
+    async function checkReminders() {
+      const nowHHMM = getCurrentHHMM();
+      const todayISO = getTodayISO();
+      const nowDay = new Date().getDay();
+      let triggeredCount = 0;
+
+      for (const rem of reminders) {
+        if (!rem.enabled) continue;
+        if (rem.time !== nowHHMM) continue;
+
+        if (rem.type === "recurring") {
+          if (rem.days && rem.days.length > 0) {
+            if (!rem.days.includes(nowDay)) continue;
+          }
+          if (rem.lastTriggered === todayISO) continue;
+
+          rem.lastTriggered = todayISO;
+          triggeredCount++;
+          showVisualAlert(
+            rem.label,
+            rem.time,
+            rem.sound,
+            rem.maxPlays || DEFAULT_MAX_ALERT_PLAYS
+          );
+          await dbPutReminder(rem);
+        } else if (rem.type === "once") {
+          if (!rem.date || rem.date !== todayISO) continue;
+          if (rem.lastTriggered === todayISO) continue;
+
+          rem.lastTriggered = todayISO;
+          rem.enabled = false;
+          triggeredCount++;
+          showVisualAlert(
+            rem.label,
+            rem.time,
+            rem.sound,
+            rem.maxPlays || DEFAULT_MAX_ALERT_PLAYS
+          );
+          await dbPutReminder(rem);
+        }
+      }
+
+      if (triggeredCount > 0) {
+        renderReminders();
+        const status = document.getElementById("status-line");
+        const msg = t("status.triggered", {
+          time: nowHHMM,
+          count: triggeredCount,
+        });
+        status.innerHTML = msg.replace(
+          nowHHMM,
+          "<span>" + nowHHMM + "</span>"
+        );
+      }
+    }
+
+    function startCheckingLoop() {
+      if (checkIntervalId !== null) {
+        clearInterval(checkIntervalId);
+      }
+      checkIntervalId = setInterval(checkReminders, 5000);
+    }
+
+    // ---------- Formulaire ----------
+    async function handleAddOrSave() {
+      const timeInput = document.getElementById("time-input");
+      const dateInput = document.getElementById("date-input");
+      const labelInput = document.getElementById("label-input");
+      const maxPlaysInput = document.getElementById("max-plays-input");
+
+      const timeValue = timeInput.value.trim();
+      if (!timeValue) {
+        alert(t("error.missingTime"));
+        return;
+      }
+
+      let dateValue = null;
+      let days = [];
+
+      if (currentType === "once") {
+        dateValue = dateInput.value.trim();
+        if (!dateValue) {
+          alert(t("error.missingDate"));
+          return;
+        }
+      } else {
+        days = getSelectedDays();
+      }
+
+      const maxPlaysValue =
+        parseInt(maxPlaysInput.value, 10) || DEFAULT_MAX_ALERT_PLAYS;
+
+      const status = document.getElementById("status-line");
+
+      if (isEditing && editingId) {
+        const rem = reminders.find((r) => r.id === editingId);
+        if (rem) {
+          rem.type = currentType;
+          rem.time = timeValue;
+          rem.date = currentType === "once" ? dateValue : null;
+          rem.days = currentType === "recurring" ? days : [];
+          rem.label = labelInput.value.trim() || "";
+          rem.sound = alarmSoundType;
+          rem.maxPlays = maxPlaysValue;
+
+          await dbPutReminder(rem);
+          renderReminders();
+
+          const msg = t("status.updated", { time: timeValue });
+          status.innerHTML = msg.replace(
+            timeValue,
+            "<span>" + timeValue + "</span>"
+          );
+        }
+        isEditing = false;
+        editingId = null;
+        updateAddButtonLabel();
+      } else {
+        const newRem = {
+          id: generateId(),
+          type: currentType,
+          time: timeValue,
+          date: currentType === "once" ? dateValue : null,
+          days,
+          label: labelInput.value.trim() || "",
+          enabled: true,
+          lastTriggered: null,
+          sound: alarmSoundType,
+          maxPlays: maxPlaysValue,
+        };
+
+        reminders.push(newRem);
+        await dbPutReminder(newRem);
+        renderReminders();
+
+        const msg = t("status.added", { time: timeValue });
+        status.innerHTML = msg.replace(
+          timeValue,
+          "<span>" + timeValue + "</span>"
+        );
+      }
+
+      labelInput.value = "";
+      maxPlaysInput.value = DEFAULT_MAX_ALERT_PLAYS;
+      if (currentType === "once") {
+        dateInput.value = getTodayISO();
+        timeInput.value = getCurrentHHMM();
+      } else {
+        resetDayChips();
+      }
+    }
+
+    async function handleClearAll() {
+      if (!confirm(t("confirm.deleteAll"))) return;
+      reminders = [];
+      await dbClearAll();
+      renderReminders();
+      document.getElementById("status-line").textContent =
+        t("status.cleared");
+    }
+
+    function setType(type) {
+      currentType = type;
+      const dateField = document.getElementById("date-field");
+      const daysWrapper = document.getElementById("days-wrapper");
+      const btnRec = document.getElementById("type-recurring-btn");
+      const btnOnce = document.getElementById("type-once-btn");
+
+      if (type === "once") {
+        dateField.style.display = "block";
+        daysWrapper.style.display = "none";
+        btnOnce.classList.add("active");
+        btnRec.classList.remove("active");
+        const dateInput = document.getElementById("date-input");
+        if (dateInput && !dateInput.value) {
+          dateInput.value = getTodayISO();
+        }
+      } else {
+        dateField.style.display = "none";
+        daysWrapper.style.display = "block";
+        btnRec.classList.add("active");
+        btnOnce.classList.remove("active");
+      }
+    }
+
+    function updateSoundUI() {
+      const alarmSelect = document.getElementById("sound-select");
+      if (alarmSelect) alarmSelect.value = alarmSoundType;
+
+      const timerSelect = document.getElementById("timer-sound-select");
+      if (timerSelect) timerSelect.value = timerSoundType;
+
+      const customRow = document.getElementById("custom-sound-row");
+      if (customRow) {
+        customRow.style.display =
+          alarmSoundType === "custom" || timerSoundType === "custom"
+            ? "block"
+            : "none";
+      }
+    }
+
+    // ---------- Tabs ----------
+    function setMainTab(tab) {
+      const clockView = document.getElementById("tab-clock-view");
+      const timerView = document.getElementById("tab-timer-view");
+      const tabClockBtn = document.getElementById("tab-clock-btn");
+      const tabTimerBtn = document.getElementById("tab-timer-btn");
+
+      if (!clockView || !timerView || !tabClockBtn || !tabTimerBtn) return;
+
+      if (tab === "clock") {
+        clockView.style.display = "block";
+        timerView.style.display = "none";
+        tabClockBtn.classList.add("active");
+        tabTimerBtn.classList.remove("active");
+      } else {
+        clockView.style.display = "none";
+        timerView.style.display = "block";
+        tabClockBtn.classList.remove("active");
+        tabTimerBtn.classList.add("active");
+      }
+    }
+
+    // ---------- Init ----------
+    document.addEventListener("DOMContentLoaded", async () => {
+      const langSelect = document.getElementById("lang-select");
+      langSelect.value = currentLang;
+
+      langSelect.addEventListener("change", () => {
+        currentLang = langSelect.value;
+        localStorage.setItem("alarm_lang", currentLang);
+        applyTranslations();
+        const dateInput = document.getElementById("date-input");
+        const timeInput = document.getElementById("time-input");
+        if (dateInput && currentType === "once" && !dateInput.value) {
+          dateInput.value = getTodayISO();
+        }
+        if (timeInput && !timeInput.value) {
+          timeInput.value = getCurrentHHMM();
+        }
+      });
+
+      applyTranslations();
+
+      document
+        .getElementById("today-display")
+        .textContent = formatTodayShort();
+
+      setType("once");
+      const dateInput = document.getElementById("date-input");
+      const timeInput = document.getElementById("time-input");
+      const maxPlaysInput = document.getElementById("max-plays-input");
+      if (dateInput) {
+        dateInput.value = getTodayISO();
+      }
+      if (timeInput) {
+        timeInput.value = getCurrentHHMM();
+      }
+      if (maxPlaysInput) {
+        maxPlaysInput.value = DEFAULT_MAX_ALERT_PLAYS;
+      }
+
+      // Tabs
+      document
+        .getElementById("tab-clock-btn")
+        .addEventListener("click", () => setMainTab("clock"));
+      document
+        .getElementById("tab-timer-btn")
+        .addEventListener("click", () => setMainTab("timer"));
+      setMainTab("clock");
+
+      document
+        .getElementById("add-btn")
+        .addEventListener("click", handleAddOrSave);
+      document
+        .getElementById("clear-btn")
+        .addEventListener("click", handleClearAll);
+
+      document
+        .getElementById("type-recurring-btn")
+        .addEventListener("click", () => setType("recurring"));
+      document
+        .getElementById("type-once-btn")
+        .addEventListener("click", () => setType("once"));
+
+      // Bouton "Activer le son" : toggle ON/OFF avec bip audible
+      document
+        .getElementById("enable-sound-btn")
+        .addEventListener("click", async () => {
+          const btn = document.getElementById("enable-sound-btn");
+          const audioStatus = document.getElementById("audio-status");
+
+          const ctx = ensureAudioContext();
+          const master = getMasterGain();
+          if (!ctx || !master) {
+            audioStatus.textContent = "Audio non supporté par ce navigateur.";
+            return;
+          }
+
+          if (!soundEnabled) {
+            soundEnabled = true;
+            warmupAudioContext(); // petit bip discret
+            audioStatus.textContent = t("audio.enable.msg");
+            btn.classList.remove("btn-main");
+            btn.classList.add("btn-success");
+          } else {
+            soundEnabled = false;
+            audioStatus.textContent = t("audio.status.inactive");
+            btn.classList.remove("btn-success");
+            btn.classList.add("btn-main");
+            stopAlertSoundLoop();
+            if (customAudioElement) {
+              customAudioElement.pause();
+            }
+          }
+        });
+
+      // Bouton "Tester le son" (global/alarmes)
+      document
+        .getElementById("test-sound-btn")
+        .addEventListener("click", async () => {
+          const ctx = ensureAudioContext();
+          const master = getMasterGain();
+          if (!ctx || !master) {
+            alert("Audio non supporté par ce navigateur.");
+            return;
+          }
+
+          if (!soundEnabled) {
+            soundEnabled = true;
+            const btn = document.getElementById("enable-sound-btn");
+            const audioStatus = document.getElementById("audio-status");
+            btn.classList.remove("btn-main");
+            btn.classList.add("btn-success");
+            audioStatus.textContent = t("audio.enable.msg");
+          }
+
+          // test : ignorer le flag pour garantir un son
+          playSelectedSoundOnce(alarmSoundType, { ignoreEnabled: true });
+        });
+
+      // Sélecteur son ALARMES
+      const soundSelect = document.getElementById("sound-select");
+      soundSelect.value = alarmSoundType;
+      soundSelect.addEventListener("change", () => {
+        alarmSoundType = soundSelect.value;
+        localStorage.setItem("alarm_sound_type", alarmSoundType);
+        updateSoundUI();
+      });
+
+      // Sélecteur son MINUTEUR
+      const timerSoundSelect = document.getElementById("timer-sound-select");
+      timerSoundSelect.value = timerSoundType;
+      timerSoundSelect.addEventListener("change", () => {
+        timerSoundType = timerSoundSelect.value;
+        localStorage.setItem("timer_sound_type", timerSoundType);
+        updateSoundUI();
+      });
+
+      updateSoundUI();
+
+      const customInput = document.getElementById("custom-sound");
+      customInput.addEventListener("change", () => {
+        if (customAudioElement && customAudioURL) {
+          customAudioElement.pause();
+          URL.revokeObjectURL(customAudioURL);
+        }
+        const file = customInput.files && customInput.files[0];
+        if (!file) {
+          customAudioElement = null;
+          customAudioURL = null;
+          return;
+        }
+        customAudioURL = URL.createObjectURL(file);
+        customAudioElement = new Audio(customAudioURL);
+        customAudioElement.loop = false;
+        customAudioElement.volume = 0.5;
+      });
+
+      // Minuteur : inputs + boutons
+      const timerMinutesInput = document.getElementById("timer-minutes");
+      const timerSecondsInput = document.getElementById("timer-seconds");
+
+      document
+        .getElementById("timer-start-btn")
+        .addEventListener("click", () => {
+          const min = parseInt(timerMinutesInput.value, 10) || 0;
+          const sec = parseInt(timerSecondsInput.value, 10) || 0;
+          let total = min * 60 + sec;
+          if (total <= 0) {
+            total = 30;
+            timerMinutesInput.value = 0;
+            timerSecondsInput.value = 30;
+          }
+          timerRemainingSec = total;
+          startTimer(total);
+        });
+
+      document
+        .getElementById("timer-stop-btn")
+        .addEventListener("click", () => {
+          stopTimer();
+        });
+
+      // Test son spécifique minuteur
+      document
+        .getElementById("timer-test-sound-btn")
+        .addEventListener("click", () => {
+          const ctx = ensureAudioContext();
+          const master = getMasterGain();
+          if (!ctx || !master) {
+            alert("Audio non supporté par ce navigateur.");
+            return;
+          }
+
+          if (!soundEnabled) {
+            soundEnabled = true;
+            const btn = document.getElementById("enable-sound-btn");
+            const audioStatus = document.getElementById("audio-status");
+            btn.classList.remove("btn-main");
+            btn.classList.add("btn-success");
+            audioStatus.textContent = t("audio.enable.msg");
+          }
+
+          playSelectedSoundOnce(timerSoundType, { ignoreEnabled: true });
+        });
+
+      // Notifications
+      if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission().catch(() => {});
+      }
+
+      try {
+        reminders = await dbGetAllReminders();
+      } catch (e) {
+        console.error("Erreur chargement IndexedDB :", e);
+        reminders = [];
+      }
+
+      // compatibilité : anciennes alarmes sans maxPlays ou sound
+      reminders.forEach((r) => {
+        if (!r.sound) r.sound = alarmSoundType;
+        if (!r.maxPlays) r.maxPlays = DEFAULT_MAX_ALERT_PLAYS;
+      });
+
+      renderReminders();
+      startCheckingLoop();
+
+      const overlay = document.getElementById("alert-overlay");
+      overlay.addEventListener("click", () => {
+        overlay.style.display = "none";
+        stopAlertSoundLoop();
+      });
+
+      updateAddButtonLabel();
+      updateTimerDisplay();
+    });
+  </script>
+</body>
+</html>
