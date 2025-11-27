@@ -701,6 +701,11 @@
 
         "tab.clock": "Horloge",
         "tab.timer": "Minuteur",
+
+        "confirm.soundDisabledAlarm":
+          "Le son n’est pas activé. L’alarme risque de ne pas sonner. Continuer quand même ?",
+        "confirm.soundDisabledTimer":
+          "Le son n’est pas activé. Le minuteur risque de ne pas sonner. Continuer quand même ?",
       },
       en: {
         "app.title": "Alarm",
@@ -771,6 +776,11 @@
 
         "tab.clock": "Clock",
         "tab.timer": "Timer",
+
+        "confirm.soundDisabledAlarm":
+          "Sound is not activated. The alarm may not ring. Continue anyway?",
+        "confirm.soundDisabledTimer":
+          "Sound is not activated. The timer may not ring. Continue anyway?",
       },
     };
 
@@ -1564,6 +1574,14 @@
         return;
       }
 
+      // ⚠️ Son global désactivé : demander confirmation avant de lancer l'alarme
+      if (!soundEnabled) {
+        const ok = confirm(t("confirm.soundDisabledAlarm"));
+        if (!ok) {
+          return;
+        }
+      }
+
       let dateValue = null;
       let days = [];
 
@@ -1593,6 +1611,10 @@
           rem.sound = alarmSoundType;
           rem.maxPlays = maxPlaysValue;
 
+          // ✅ Une alarme éditée repart toujours sur ON
+          rem.enabled = true;
+          rem.lastTriggered = null;
+
           await dbPutReminder(rem);
           renderReminders();
 
@@ -1613,7 +1635,7 @@
           date: currentType === "once" ? dateValue : null,
           days,
           label: labelInput.value.trim() || "",
-          enabled: true,
+          enabled: true, // ✅ démarre toujours en ON
           lastTriggered: null,
           sound: alarmSoundType,
           maxPlays: maxPlaysValue,
@@ -1874,6 +1896,14 @@
       document
         .getElementById("timer-start-btn")
         .addEventListener("click", () => {
+          // ⚠️ Son global désactivé : prévenir avant de lancer le minuteur
+          if (!soundEnabled) {
+            const ok = confirm(t("confirm.soundDisabledTimer"));
+            if (!ok) {
+              return;
+            }
+          }
+
           const min = parseInt(timerMinutesInput.value, 10) || 0;
           const sec = parseInt(timerSecondsInput.value, 10) || 0;
           let total = min * 60 + sec;
@@ -1927,10 +1957,11 @@
         reminders = [];
       }
 
-      // compatibilité : anciennes alarmes sans maxPlays ou sound
+      // compatibilité : anciennes alarmes sans maxPlays ou sound ou enabled
       reminders.forEach((r) => {
         if (!r.sound) r.sound = alarmSoundType;
         if (!r.maxPlays) r.maxPlays = DEFAULT_MAX_ALERT_PLAYS;
+        if (typeof r.enabled !== "boolean") r.enabled = true;
       });
 
       renderReminders();
